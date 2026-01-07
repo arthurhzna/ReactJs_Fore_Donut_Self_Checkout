@@ -1,46 +1,53 @@
-# Getting Started with Create React App
+# Foredonat — Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Overview
+--------
+This frontend was bootstrapped with Create React App (CRA) and is implemented using TypeScript and React. The application opens a WebSocket connection (see `src/App.tsx`) and uses services in `src/services/` to fetch tray data from the backend.
 
-## Available Scripts
+Project files of note
+---------------------
+- `package.json` — dependencies and npm scripts (`start`, `build`, `test`, `eject`).
+- `tsconfig.json` — TypeScript configuration.
+- `src/` — source code.
+- `public/` — static public files.
+- `build/` — output after `npm run build`.
 
-In the project directory, you can run:
+Available scripts
+-----------------
+- `npm start` — runs the development server (`react-scripts start`).
+- `npm run build` — creates a production build (`react-scripts build`) into `build/`.
+- `npm test` — runs tests (`react-scripts test`).
+- `npm run eject` — ejects CRA configuration into the project (irreversible).
 
-### `npm start`
+Development
+-----------
+Install dependencies and start the dev server:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+cd frontend
+npm ci
+npm start
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Open `http://localhost:3000`.
 
-### `npm test`
+Production build
+----------------
+Run:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm run build
+```
 
-### `npm run build`
+The compiled production assets will be in `build/`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Linting and TypeScript
+----------------------
+- ESLint configuration is provided by `react-scripts` and referenced in `package.json` under `eslintConfig`.
+- TypeScript configuration is located at `frontend/tsconfig.json`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Notes
+-----
+- Build and tooling configuration provided by `react-scripts` are not checked into this repository.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+This README contains factual information about the project's structure and how to run and build it.
