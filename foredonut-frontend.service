@@ -1,9 +1,9 @@
 [Unit]
 Description=Fore Donut Frontend (Static React)
-After=network-online.target fore_donut_backend.service
-Wants=fore_dont_backend.service
-BindsTo=fore_donut_backend.service
-PartOf=fore_donut_backend.service
+After=network-online.target foredonut-backend.service
+Wants=foredonut-backend.service
+BindsTo=foredonut-backend.service
+PartOf=foredonut-backend.service
 
 [Service]
 Type=simple
