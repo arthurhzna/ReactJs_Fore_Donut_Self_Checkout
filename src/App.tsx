@@ -18,59 +18,112 @@ import {
 function App() {
   const [frame, setFrame] = useState<string | null>(null);
   const [trayList, setTrayList] = useState<DonutTray[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8000/ws");
-    ws.onmessage = (e) => setFrame(e.data as string);
+    ws.onmessage = (e) => {
+      setFrame(e.data as string);
+    };
     ws.onerror = (err) => console.error("WS error", err);
     return () => ws.close();
   }, []);
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
+
   const handleNext = async () => {
+    setIsLoading(true);
     try {
       const data = await getTrayList();
 
       if (data.alert) {
         Swal.fire({
           title: "Alert!",
-          text: "Donut is laying down",
+          text: "Donut is Laying Down",
           icon: "error",
+          showConfirmButton: true,
           confirmButtonText: "OK",
-          confirmButtonColor: "#3b82f6", 
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: "swal-confirm-btn-large",
+          },
         });
         return;
       }
-      
 
       const newTray: DonutTray[] = (data.donut_tray ?? []).map((it: any) => ({
         label: it.label ?? "unknown",
         conf: Number(it.conf ?? 0),
       }));
 
+      if (newTray.length === 0) {
+        Toast.fire({
+          icon: "info",
+          title: "No Donuts Detected",
+        });
+        return;
+      }
+
       setTrayList((prev) => [...prev, ...newTray]);
     } catch (err) {
       console.error("next failed", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleStop = () => {
+    setTrayList([]);
 
-    
+    Swal.fire({
+      title: "Checkout!",
+      text: "Continue to Payment",
+      icon: "success",
+      showConfirmButton: true,
+      confirmButtonText: "OK",
+      buttonsStyling: false,
+      customClass: {
+        confirmButton: "swal-confirm-btn-large",
+      },
+    });
+  };
+
+  const handleReset = () => {
+    if (trayList.length === 0) return;
+
+    Swal.fire({
+      title: "Reset!",
+      text: "List has been cleared",
+      icon: "success",
+      showConfirmButton: true,
+      confirmButtonText: "OK",
+      buttonsStyling: false,
+      customClass: {
+        confirmButton: "swal-confirm-btn-large",
+      },
+    });
+
     setTrayList([]);
   };
 
-  const countsMap = trayList.reduce(
-    (acc: Record<string, number>, item) => {
-      const key = item.label ?? "unknown";
-      acc[key] = (acc[key] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
+  const countsMap = trayList.reduce((acc: Record<string, number>, item) => {
+    const key = item.label ?? "unknown";
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <div className="app">
-      {/* ================= LEFT ================= */}
       <div className="left-panel">
         {frame ? (
           <img
@@ -82,10 +135,7 @@ function App() {
           <div className="waiting">Waiting for stream...</div>
         )}
       </div>
-
-      {/* ================= RIGHT ================= */}
       <div className="right-panel">
-        {/* ================= TABLE ================= */}
         <div className="right-top">
           <Box
             className="counts"
@@ -102,8 +152,8 @@ function App() {
               sx={{
                 flex: 1,
                 minHeight: 0,
-                maxHeight: "100%", 
-                overflowY: "auto", 
+                maxHeight: "100%",
+                overflowY: "auto",
                 overflowX: "hidden",
                 background: "linear-gradient(180deg, #f8fbff, #eef4ff)",
                 borderRadius: 3,
@@ -151,14 +201,48 @@ function App() {
             </TableContainer>
           </Box>
         </div>
-
-        {/* ================= BUTTONS ================= */}
         <div className="right-bottom">
-          <button className="btn next" onClick={handleNext}>
-            Next
-          </button>
-          <button className="btn stop" onClick={handleStop}>
-            Stop
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flex: "0 0 auto",
+              height: "45%",
+            }}
+          >
+            <button
+              className="btn reset"
+              onClick={handleReset}
+              disabled={trayList.length === 0}
+              aria-disabled={trayList.length === 0}
+              style={{ flex: "0 0 25%" }}
+            >
+              Reset
+            </button>
+            <button
+              className="btn next"
+              onClick={handleNext}
+              disabled={isLoading}
+              style={{ flex: "1" }}
+            >
+              {isLoading ? (
+                <span className="spinner-container">
+                  <span className="spinner"></span>
+                  <span style={{ marginLeft: "10px" }}>Processing...</span>
+                </span>
+              ) : (
+                "Next"
+              )}
+            </button>
+          </div>
+          <button
+            className="btn stop"
+            onClick={handleStop}
+            disabled={trayList.length === 0}
+            aria-disabled={trayList.length === 0}
+            style={{ flex: "1", minHeight: "45%" }}
+          >
+            Checkout
           </button>
         </div>
       </div>
@@ -167,5 +251,3 @@ function App() {
 }
 
 export default App;
-
-
